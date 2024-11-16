@@ -17,7 +17,7 @@ def run_ph_stat_model(temp, od, co2_initial, ph_initial, no3_initial, n2_spargin
     hno3_injection_value = 0.23  # mL injected from the reservoir
 
     # Define organism specific parameters
-    my_max = 0.3  # h-1
+    my_max = 0.198  # h-1
     y_n = 0.75  # mol cell-C mol-1 NO3 respired, Yield coefficient for cell carbon per mole of nitrate respired.
     cell_dw = 300  # fg DW cell-1, Cell dry weight in femtograms per cell.
     n_od = 1250000000  # cells mL-1 OD-1, Number of cells per mL per unit of optical density (OD).
