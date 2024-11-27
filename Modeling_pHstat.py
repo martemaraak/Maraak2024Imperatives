@@ -15,6 +15,7 @@ def run_ph_stat_model(temp, od, co2_initial, ph_initial, no3_initial, n2_spargin
     # Define experimental settings
     hno3_reservoir = 5  # M concentration in the reservoir
     hno3_injection_value = 0.23  # mL injected from the reservoir
+    glucose_reservoir = 1.42 # M concentration of NH4NO3 in the glucose reservoir
 
     # Define organism specific parameters
     my_max = 0.23  # h-1
@@ -53,6 +54,7 @@ def run_ph_stat_model(temp, od, co2_initial, ph_initial, no3_initial, n2_spargin
     hno3_injection = [0]
     gluc_injection = [0]
     volume = [v_initial]
+    hno3_mol = [0] # concentration of H+
     no3_mol = [no3_initial * v_initial / 1000]  # Initial moles of NO3 based on initial concentration and volume
     no3_conc = [no3_mol[0] / volume[0]]  # Initial NO3 concentration
     v_no3 = [(v_no3_max_reactor * no3_mol[0]) / (no3_mol[0] + km_no3)]
@@ -95,6 +97,10 @@ def run_ph_stat_model(temp, od, co2_initial, ph_initial, no3_initial, n2_spargin
         no3_mol.append(max(no3_mol_temp, 0))  # Ensure NO3_mol does not go below 0
         co2_mol.append(co2_mol[-1] + time_step * (v_co2[-1] - t_co2[-1]))
 
+        # Calculate the fraction of total NO3- resulting from HNO3
+        hno3_mol_temp = no3_mol[-1] * (hno3_reservoir / (hno3_reservoir + glucose_reservoir * k_feed))
+        hno3_mol.append(max(hno3_mol_temp, 0))
+
         # NO3 and CO2 mol calculations
         no3_conc.append(no3_mol[-1] / volume[-1])
         v_no3.append((v_no3_max_reactor * no3_mol[-1]) / (no3_mol[-1] + km_no3))
@@ -103,7 +109,7 @@ def run_ph_stat_model(temp, od, co2_initial, ph_initial, no3_initial, n2_spargin
 
         # Calculate current pH
         p_h_change_due_to_co2.append(-d_co2 * co2_total[-1])
-        p_h_change_due_to_hno3.append(-d_hno3 * no3_mol[-1])
+        p_h_change_due_to_hno3.append(-d_hno3 * hno3_mol[-1]) # only HNO3 affects pH. Net pH change of NH4+ assimilation and NO3- respiration is 0
         ph.append(ph_initial + p_h_change_due_to_co2[-1] + p_h_change_due_to_hno3[-1])
 
         # CO2 modeling
