@@ -1,8 +1,8 @@
 # Model simulating the CO2, NO3-, and pH kinetics in a pH-stat based on empirical values, physical parameters in the reactor, 
 # and cell-specific parameters including maximum growth rate and rate of electron transfer.
 
-# version 2
-# Marte Mølsæter Maråk and Lars Bakken, 23.07.24
+# version 3
+# Marte Mølsæter Maråk, 23.07.24
 
 # Import
 import matplotlib.pyplot as plt
@@ -55,6 +55,7 @@ def run_ph_stat_model(temp, od, co2_initial, ph_initial, no3_initial, n2_spargin
     gluc_injection = [0]
     volume = [v_initial]
     hno3_mol = [0] # concentration of H+
+    hno3_conc = [hno3_mol[0] / volume[0]]                    
     no3_mol = [no3_initial * v_initial / 1000]  # Initial moles of NO3 based on initial concentration and volume
     no3_conc = [no3_mol[0] / volume[0]]  # Initial NO3 concentration
     v_no3 = [(v_no3_max_reactor * no3_mol[0]) / (no3_mol[0] + km_no3)]
@@ -62,7 +63,7 @@ def run_ph_stat_model(temp, od, co2_initial, ph_initial, no3_initial, n2_spargin
     co2_mol = [co2_initial]
     co2_total = [co2_mol[0] / volume[0]]
     p_h_change_due_to_co2 = [- d_co2 * co2_total[0]]
-    p_h_change_due_to_hno3 = [- d_hno3 * no3_mol[0]]
+    p_h_change_due_to_hno3 = [- d_hno3 * hno3_conc[0]]
     ph = [ph_initial + p_h_change_due_to_co2[0] + p_h_change_due_to_hno3[0]]
     hco3 = [co2_model * 10 ** (-356.3094 - 0.061 * temp_k + 21834.37 / temp_k + 126.8339 * math.log10(temp_k) - 1670000
                                / (temp_k ** 2)) / (10 ** -ph[0])]
@@ -100,6 +101,7 @@ def run_ph_stat_model(temp, od, co2_initial, ph_initial, no3_initial, n2_spargin
         # Calculate the fraction of total NO3- resulting from HNO3
         hno3_mol_temp = no3_mol[-1] * (hno3_reservoir / (hno3_reservoir + glucose_reservoir * k_feed))
         hno3_mol.append(max(hno3_mol_temp, 0))
+        hno3_conc.append(hno3_mol[-1] / volume[-1])
 
         # NO3 and CO2 mol calculations
         no3_conc.append(no3_mol[-1] / volume[-1])
@@ -109,7 +111,7 @@ def run_ph_stat_model(temp, od, co2_initial, ph_initial, no3_initial, n2_spargin
 
         # Calculate current pH
         p_h_change_due_to_co2.append(-d_co2 * co2_total[-1])
-        p_h_change_due_to_hno3.append(-d_hno3 * hno3_mol[-1]) # only HNO3 affects pH. Net pH change of NH4+ assimilation and NO3- respiration is 0
+        p_h_change_due_to_hno3.append(-d_hno3 * hno3_conc[-1]) # only HNO3 affects pH. Net pH change of NH4+ assimilation and NO3- respiration is 0
         ph.append(ph_initial + p_h_change_due_to_co2[-1] + p_h_change_due_to_hno3[-1])
 
         # CO2 modeling
