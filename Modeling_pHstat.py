@@ -2,7 +2,7 @@
 # and cell-specific parameters including maximum growth rate and rate of electron transfer.
 
 # version 3
-# Marte Mølsæter Maråk, 23.07.24
+# Marte Mølsæter Maråk, 23.04.25
 
 # Import
 import matplotlib.pyplot as plt
