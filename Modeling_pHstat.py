@@ -99,8 +99,13 @@ def run_ph_stat_model(temp, od, co2_initial, ph_initial, no3_initial, n2_spargin
         co2_mol.append(co2_mol[-1] + time_step * (v_co2[-1] - t_co2[-1]))
 
         # Calculate the fraction of total NO3- resulting from HNO3
-        hno3_mol_temp = no3_mol[-1] * (hno3_reservoir / (hno3_reservoir + glucose_reservoir * k_feed))
-        hno3_mol.append(max(hno3_mol_temp, 0))
+        if no3_mol[-2] - time_step * v_no3[-1] < 0:
+            hno3_mol_temp = 0 + hno3_injection[-1] * hno3_reservoir
+        else:
+            ratio = (hno3_mol[-1] / no3_mol[-2]) if no3_mol[-2] > 0 else 0 
+            hno3_mol_temp = hno3_mol[-1] - time_step * v_no3[-1] * ratio + hno3_injection[-1] * hno3_reservoir
+            
+        hno3_mol.append(hno3_mol_temp)
         hno3_conc.append(hno3_mol[-1] / volume[-1])
 
         # NO3 and CO2 mol calculations
