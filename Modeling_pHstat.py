@@ -12,6 +12,55 @@ import math
 
 def run_ph_stat_model(temp, od, co2_initial, ph_initial, no3_initial, n2_sparging, v_initial, k_feed, ph_setpoint,
                       f_fraction, time_step, total_duration):
+    ''' 
+    Simulation of the  CO2, NO3, and pH kinetics in the bioreactor
+    
+    Parameters
+    -----------
+    temp : numeric
+        Temperature in the bioreactor (*C)
+    od : numeric
+        OD660 - optical density, proxy for cell density
+    co2_initial : numeric
+        Initial total concentration of CO2 (CO2 + HCO3- + CO32-) (moles)
+    pH_initial : numeric
+        Initial pH / intrinsic pH of medium in the absence of HNO3 and CO2
+    n2_sparging : numeric
+        sparging flow rate (L min-1)
+    v_initial : numeric
+        initial liquid volume in the bioreactor (L)
+    k_feed : numeric
+        amount of feed added per amount of acid added (mL mL-1)
+    pH_setpoint : numeric
+        pH setpoint, pH above the setpoint triggers an acid (and feed) injection
+    f_fraction : numeric
+        fraction of fugacity reached in the bubbles, where fugactiy is the partial pressure of 
+        CO2 in the bubbles when in equilibrium with the liquid
+    time_step : numeric
+        time step interval for the simulation (s)
+    total_duration : numeric
+        time period for the simulation (s)
+        
+    Returns
+    ----------
+    time_axis_min : numeric
+        time axis (min)
+    no3_conc_mM : numeric
+        Concentration of NO3- in the reactor liquid (mM)
+    co2_total_mM : numeric
+        total CO2 in the reactor liquid (CO2 + HCO3- + CO32-) (mM)
+    ph : numeric
+        pH in the liquid 
+    cells : numeric  
+        number of cells
+    growth_rate : numeric
+        estimated growth rate (h-1)
+    co2_bubbles : numeric 
+        Fraction of CO2 in the sparging bubbles (vol%)
+    co2_outflow : numeric
+        Fraction of CO2 in the outflow (vol%)
+    '''
+                        
     # Define experimental settings
     hno3_reservoir = 5  # M concentration in the reservoir
     hno3_injection_value = 0.23  # mL injected from the reservoir
